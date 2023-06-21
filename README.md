@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# Requisitos
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Para poder utilizar este proyecto, es necesario tener instalados los siguientes requisitos:
 
-## Available Scripts
+- Node.js
+- React
 
-In the project directory, you can run:
+## Instalar dependencias
 
-### `npm start`
+Una vez que tengas instalados los requisitos, clona el repositorio en el directorio que desees. Luego, dentro de la carpeta que contiene la solución React, ejecuta el siguiente comando para instalar todas las dependencias utilizadas:
+npm install
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Credenciales de la base de datos
 
-### `npm test`
+Para modificar las credenciales de la base de datos, debes ir a la carpeta "API" y abrir el archivo "Server.js". En ese archivo, podrás modificar la variable `dbConfig` con las credenciales correspondientes.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Ejecutar el Cliente y el Servidor
 
-### `npm run build`
+Debido a que el backend y el frontend están separados, debes ejecutarlos de forma independiente.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Ejecutar el servidor
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Para ejecutar el servidor, sitúate en el directorio donde se encuentra el archivo "Server.js" y ejecuta el siguiente comando:
+```bash
+node Server.js
+```
+Deberás ver un mensaje que indique: "Servidor escuchando en el puerto 8000".
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Ejecutar el cliente
 
-### `npm run eject`
+Una vez hecho lo anterior, dirígete al directorio donde se encuentra el proyecto "solucionreact" y ejecuta el siguiente comando:
+```bash
+npm start
+```
+Una vez finalizada la ejecución, se mostrará la interfaz en tu navegador.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Llenar la base de datos
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Para llenar la base de datos, primero debes iniciar el servidor y luego el cliente ("solucionreact"). Una vez hecho esto, abre el enlace `http://localhost:3000/creardb` en tu navegador y haz clic en el botón correspondiente. Una vez finalizado, se mostrará un mensaje de finalización.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

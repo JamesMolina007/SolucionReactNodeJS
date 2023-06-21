@@ -182,7 +182,62 @@ app.post('/generar-datos', (req, res) => {
     });
   });
   
+  app.post('/eliminar-videojuego', (req, res) =>{
+    const { id } = req.body;
+    const connection = mysql.createConnection(dbConfig);
+    connection.connect((err) => {
+      if (err) {
+        console.error('Error al conectar con MySQL: ', err);
+        res.status(500).json({ error: 'Error al conectar con la base de datos' });
+        return;
+      }
+      const query = `
+        DELETE FROM videojuegos
+        WHERE id = '${id}'
+      `;
+      connection.query(query, (error, results) => {
+        if (error) {
+          connection.end();
+          console.error('Error al realizar la consulta: ', error);
+          res.status(500).json({ error: 'Error al realizar la consulta' });
+          return;
+        }
+        connection.end();
+        res.json({
+          videojuegos: results,
+        });
+      });
+    });
+  });
   
+  
+  app.post('/eliminar-varios-videojuegos', (req, res) =>{
+    const { ids } = req.body;
+    const connection = mysql.createConnection(dbConfig);
+    connection.connect((err) => {
+      if (err) {
+        console.error('Error al conectar con MySQL: ', err);
+        res.status(500).json({ error: 'Error al conectar con la base de datos' });
+        return;
+      }
+      const query = `
+        DELETE FROM videojuegos
+        WHERE id IN (${ids})
+      `;
+      connection.query(query, (error, results) => {
+        if (error) {
+          connection.end();
+          console.error('Error al realizar la consulta: ', error);
+          res.status(500).json({ error: 'Error al realizar la consulta' });
+          return;
+        }
+        connection.end();
+        res.json({
+          videojuegos: results,
+        });
+      });
+    });
+  });  
 
 
 app.listen(8000, () => {

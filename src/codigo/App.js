@@ -1,34 +1,28 @@
 import React, { useEffect, useState } from "react";
 
 function App() {
-
+  //USE STATES Y VARIABLES
   const itemPorPagina = 10;
+  const API_URL = "http://localhost:8000";
   const [paginaActual, setPaginaActual] = useState(1);
   const [paginasTotales, setPaginasTotales] = useState(1);
-  
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [videojuegos, setVideojuegos] = useState([]);
-
+  const [showModal, setShowModal] = useState(false);
+  const [errores, setErrores] = useState({});
+  const [eliminarVarios, setEliminarVarios] = useState(false);
+  const [checkAll, setCheckAll] = useState(false);
+  //ATRIBUTOS DEL VIDEOJUEGO
   const [id, setId] = useState("");
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("Accion");
   const [dificultad, setDificultad] = useState("Facil");
   const [anio_lanzamiento, setAnio_lanzamiento] = useState("");
   const [precio, setPrecio] = useState("");
-
-  const [showModal, setShowModal] = useState(false);
   
-  const [errores, setErrores] = useState({});
-  
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
-
+  //////////////////////USE EFFECTS
   useEffect(() => {
     obtenerVideojuegos();
   }, []);
@@ -40,14 +34,25 @@ function App() {
   useEffect(() => {
     obtenerVideojuegos();
   }, [paginaActual]);
+  //////////////////////FIN DE USE EFFECTS
 
+  //////////////////////FUNCIONES
   function handlePageChange(page) {
     setPaginaActual(page);
   }
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+  //////////////////////FIN DE FUNCIONES
+
+  ///////////////////LISTAR VIDEOJUEGOS
   function obtenerVideojuegos() {
-    
-    fetch("http://localhost:8000/videojuegos", {
+    fetch(API_URL + "/videojuegos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +74,9 @@ function App() {
       })
       .catch((error) => console.error("Error:", error));
   }
+  /////////////////FIN DE LISTAR VIDEOJUEGOS 
 
+  ///////////////////GUARDAR VIDEOJUEGO
   function guardarVideojuego(){    
     const nuevosErrores = {};
     if (!nombre) nuevosErrores.nombre = "El nombre es obligatorio";
@@ -79,7 +86,7 @@ function App() {
       setErrores(nuevosErrores);
       return;
     }
-    fetch("http://localhost:8000/guardar-videojuego", {
+    fetch(API_URL + "/guardar-videojuego", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,9 +114,11 @@ function App() {
       })
       .catch((error) => console.error("Error:", error));
   }
+  ///////////////////FIN DE GUARDAR VIDEOJUEGO
 
+  ///////////////////EDITAR VIDEOJUEGO
   function handleEditar(id) {
-    fetch("http://localhost:8000/videojuego/" + id)
+    fetch(API_URL + "/videojuego/" + id)
       .then((res) => res.json())
       .then((data) => {
         setId(data.videojuegos.id);
@@ -123,9 +132,91 @@ function App() {
       })
       .catch((error) => console.error("Error:", error));
   }
+  ///////////////////FIN DE EDITAR VIDEOJUEGO
 
+  ///////////////////ELIMINAR VIDEOJUEGO
+  //////////////SELECCIONAR TODOS LOS VIDEOJUEGOS
+  function handleCheckAll(e) {
+    const checked = e.target.checked;
+    setCheckAll(checked);
+    const nuevosVideojuegos = videojuegos.map((videojuego) => {
+      videojuego.checked = checked;
+      return videojuego;
+    });
+    setVideojuegos(nuevosVideojuegos);
+    setEliminarVarios(checked);
+  }
+  //////////////FIN DE SELECCIONAR TODOS LOS VIDEOJUEGOS
+
+  //////////////SELECCIONAR UN VIDEOJUEGO
+  function handleCheck(e) {
+    const checked = e.target.checked;
+    const id = e.target.value;
+    const nuevosVideojuegos = videojuegos.map((videojuego) => {
+      if (videojuego.id == id) {
+        return { ...videojuego, checked: checked };
+      }
+      return videojuego;
+    });
+    setVideojuegos(nuevosVideojuegos);
+    const seleccionados = nuevosVideojuegos.filter((videojuego) => videojuego.checked);
+    setEliminarVarios(seleccionados.length > 0);
+  }
+  //////////////FIN DE SELECCIONAR UN VIDEOJUEGO
+  
+  //////////////ELIMINAR UN VIDEOJUEGO
+  function handleEliminar(id) {
+    const confirmar = window.confirm("¿Está seguro de eliminar el registro?");
+    if (!confirmar) {
+      return;
+    }
+    fetch(API_URL + "/eliminar-videojuego", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        obtenerVideojuegos();
+      }
+      )
+      .catch((error) => console.error("Error:", error));
+  }
+  //////////////FIN DE ELIMINAR UN VIDEOJUEGO
+
+  //////////////ELIMINAR VARIOS VIDEOJUEGOS
+  function handleEliminarVarios() {
+    const confirmar = window.confirm("¿Está seguro de eliminar los registros?");
+    if (!confirmar) {
+      return;
+    }
+    const ids = videojuegos.filter((videojuego) => videojuego.checked).map((videojuego) => videojuego.id);
+    fetch(API_URL + "/eliminar-varios-videojuegos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ids,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        obtenerVideojuegos();
+        setEliminarVarios(false);
+        setCheckAll(false);
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+  //////////////FIN DE ELIMINAR VARIOS VIDEOJUEGOS
+  ///////////////////FIN DE ELIMINAR VIDEOJUEGO
+
+  ///////////////////PAGINACION
   function actualizarPaginacion(totalPaginas, paginaActual) {
-    
     const paginacion = [];
     if (paginaActual > 1) {
       paginacion.push(
@@ -196,6 +287,7 @@ function App() {
     }
     return paginacion;
   }
+  ///////////////////FIN DE PAGINACION
 
   return (
     <div class="container">
@@ -205,7 +297,7 @@ function App() {
         <button id="btn-agregar" className="btn btn-primary" onClick={handleOpenModal}>
             <i class="fas fa-plus"></i> Agregar
           </button>
-          <button id="btn-eliminar" class="btn btn-danger" disabled>
+          <button id="btn-eliminar" className="btn btn-danger" disabled={!eliminarVarios} onClick={handleEliminarVarios}>
             <i class="fas fa-trash"></i> Eliminar 
           </button>
         </div>
@@ -246,7 +338,7 @@ function App() {
         <thead>
           <tr>
             <th>
-              <input type="checkbox" id="check-todos"></input>
+            <input type="checkbox" id="check-todos" onChange={handleCheckAll} checked={checkAll}></input>
             </th>
             <th>Nombre</th>
             <th>Categoria</th>
@@ -264,6 +356,9 @@ function App() {
                   type="checkbox"
                   className="check-videojuego"
                   data-id={videojuego.id}
+                  checked={videojuego.checked}
+                  value={videojuego.id}
+                  onChange={handleCheck}
                 ></input>
               </td>
               <td>{videojuego.nombre}</td>
@@ -282,6 +377,7 @@ function App() {
                 <button
                   className="btn btn-danger btn-eliminar"
                   data-id={videojuego.id}
+                  onClick={() => handleEliminar(videojuego.id)}
                 >
                   <i className="fas fa-trash"></i>
                 </button>
