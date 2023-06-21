@@ -1,11 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+import ReactDOM from 'react-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import App from './codigo/App';
+import CrearDb from './codigo/CrearDb';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const rootElement = document.getElementById('root');
+ReactDOM.render(
+  <BrowserRouter>
+    <Routes> 
+      <Route path="/" element={<App />} />
+      <Route path="/creardb" element={<CrearDb />} />
+    </Routes>
+  </BrowserRouter>,
+  rootElement
 );
-
