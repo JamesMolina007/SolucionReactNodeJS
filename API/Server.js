@@ -102,7 +102,89 @@ app.post('/generar-datos', (req, res) => {
     });
   });
   
+  app.get('/videojuego/:id', (req, res) => {
+    const { id } = req.params;
+    const connection = mysql.createConnection(dbConfig);
   
+    connection.connect((err) => {
+      if (err) {
+        console.error('Error al conectar con MySQL: ', err);
+        res.status(500).json({ error: 'Error al conectar con la base de datos' });
+        return;
+      }
+  
+      const query = `
+        SELECT * FROM videojuegos
+        WHERE id = ${id}
+      `;
+      connection.query(query, (error, results) => {
+        if (error) {
+          connection.end();
+          console.error('Error al realizar la consulta: ', error);
+          res.status(500).json({ error: 'Error al realizar la consulta' });
+          return;
+        }
+  
+        connection.end();
+        res.json({
+          videojuegos: results[0],
+        });
+      });
+    });
+  });
+  
+  
+  app.post('/guardar-videojuego', (req, res) =>{
+    const { id, nombre, categoria, dificultad, anio_lanzamiento, precio } = req.body;
+    const connection = mysql.createConnection(dbConfig);
+    connection.connect((err) => {
+      if (err) {
+        console.error('Error al conectar con MySQL: ', err);
+        res.status(500).json({ error: 'Error al conectar con la base de datos' });
+        return;
+      }
+      if(id == '' || id == 'undefined' || id == null || id == undefined){
+        const query = `
+          INSERT INTO videojuegos (nombre, categoria, dificultad, anio_lanzamiento, precio)
+          VALUES ('${nombre}', '${categoria}', '${dificultad}', '${anio_lanzamiento}', '${precio}')
+        `;
+        connection.query(query, (error, results) => {
+          if (error) {
+            connection.end();
+            console.error('Error al realizar la consulta: ', error);
+            res.status(500).json({ error: 'Error al realizar la consulta' });
+            return;
+          }
+          connection.end();
+          res.json({
+            videojuegos: results,
+          });
+        });
+      }else{
+        const query = `
+          UPDATE videojuegos
+          SET nombre = '${nombre}', categoria = '${categoria}', dificultad = '${dificultad}', anio_lanzamiento = '${anio_lanzamiento}', precio = '${precio}'
+          WHERE id = '${id}'
+        `;
+        connection.query(query, (error, results) => {
+          if (error) {
+            connection.end();
+            console.error('Error al realizar la consulta: ', error);
+            res.status(500).json({ error: 'Error al realizar la consulta' });
+            return;
+          }
+          connection.end();
+          res.json({
+            videojuegos: results,
+          });
+        });
+      }
+    });
+  });
+  
+  
+
+
 app.listen(8000, () => {
     console.log('Servidor escuchando en el puerto 8000');
   });

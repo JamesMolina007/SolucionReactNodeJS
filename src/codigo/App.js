@@ -19,6 +19,8 @@ function App() {
 
   const [showModal, setShowModal] = useState(false);
   
+  const [errores, setErrores] = useState({});
+  
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -64,6 +66,60 @@ function App() {
         setPaginasTotales(Math.ceil(data.totalItems / itemPorPagina));
         setLoading(false);
         console.log(data.totalItems);
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+  function guardarVideojuego(){    
+    const nuevosErrores = {};
+    if (!nombre) nuevosErrores.nombre = "El nombre es obligatorio";
+    if (!anio_lanzamiento) nuevosErrores.anio_lanzamiento = "El año de lanzamiento es obligatorio";
+    if (!precio) nuevosErrores.precio = "El precio es obligatorio";
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores);
+      return;
+    }
+    fetch("http://localhost:8000/guardar-videojuego", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        nombre,
+        categoria,
+        dificultad,
+        anio_lanzamiento,
+        precio,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        obtenerVideojuegos();
+        setId("");
+        setNombre("");
+        setCategoria("Accion");
+        setDificultad("Facil");
+        setAnio_lanzamiento("");
+        setPrecio("");
+        handleCloseModal();
+        
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+  function handleEditar(id) {
+    fetch("http://localhost:8000/videojuego/" + id)
+      .then((res) => res.json())
+      .then((data) => {
+        setId(data.videojuegos.id);
+        setNombre(data.videojuegos.nombre);
+        setCategoria(data.videojuegos.categoria);
+        setDificultad(data.videojuegos.dificultad);
+        setAnio_lanzamiento(data.videojuegos.anio_lanzamiento);
+        setPrecio(data.videojuegos.precio);
+        setErrores({});
+        handleOpenModal();
       })
       .catch((error) => console.error("Error:", error));
   }
@@ -219,6 +275,7 @@ function App() {
                 <button
                   className="btn btn-primary btn-editar"
                   data-id={videojuego.id}
+                  onClick={() => handleEditar(videojuego.id)}
                 >
                   <i className="fas fa-edit"></i>
                 </button>
@@ -264,7 +321,7 @@ function App() {
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${errores.nombre ? 'is-invalid' : ''}`}
                     id="nombre"
                     name="nombre"
                     value={nombre}
@@ -299,7 +356,7 @@ function App() {
                   <label className="form-label">Año de lanzamiento</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className={`form-control ${errores.anio_lanzamiento ? 'is-invalid' : ''}`}
                     id="lanzamiento"
                     name="lanzamiento"
                     value={anio_lanzamiento}
@@ -309,12 +366,20 @@ function App() {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Precio</label>
-                  <input type="number" className="form-control" id="precio" name="precio" value={precio} onChange={(e) => setPrecio(e.target.value)} required></input>
+                  <input 
+                  type="number" 
+                  className={`form-control ${errores.precio ? 'is-invalid' : ''}`}
+                  id="precio" 
+                  name="precio" 
+                  value={precio} 
+                  onChange={(e) => setPrecio(e.target.value)} required>
+
+                  </input>
                 </div>
               </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" id="guardarVideojuego" >
+              <button type="button" className="btn btn-primary" id="guardarVideojuego" onClick={guardarVideojuego}>
                 Guardar
               </button>
               <button
